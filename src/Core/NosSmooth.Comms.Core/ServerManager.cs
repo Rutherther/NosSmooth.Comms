@@ -7,7 +7,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NosSmooth.Comms.Data;
-using NosSmooth.Comms.Data.Messages;
 using NosSmooth.Core.Extensions;
 using Remora.Results;
 
@@ -24,6 +23,7 @@ public class ServerManager
     private readonly ILogger<ServerManager> _logger;
     private readonly ILogger<ConnectionHandler> _handlerLogger;
     private readonly List<ConnectionHandler> _connectionHandlers;
+    private readonly ReaderWriterLockSlim _readerWriterLock;
     private Task<Result>? _task;
     private CancellationTokenSource? _ctSource;
 
@@ -46,10 +46,30 @@ public class ServerManager
     {
         _server = server;
         _connectionHandlers = new List<ConnectionHandler>();
+        _readerWriterLock = new ReaderWriterLockSlim();
         _messageHandler = messageHandler;
         _options = options;
         _logger = logger;
         _handlerLogger = handlerLogger;
+    }
+
+    /// <summary>
+    /// Gets connection handlers.
+    /// </summary>
+    public IReadOnlyList<ConnectionHandler> ConnectionHandlers
+    {
+        get
+        {
+            _readerWriterLock.EnterReadLock();
+            try
+            {
+                return _connectionHandlers.ToArray();
+            }
+            finally
+            {
+                _readerWriterLock.ExitReadLock();
+            }
+        }
     }
 
     /// <summary>
@@ -131,14 +151,45 @@ public class ServerManager
                 continue;
             }
 
-            var handler = new ConnectionHandler(null, connection, _messageHandler, _options, _handlerLogger);
-            _connectionHandlers.Add(handler);
+            var handler = new ConnectionHandler
+            (
+                null,
+                connection,
+                _messageHandler,
+                _options,
+                _handlerLogger
+            );
+            _readerWriterLock.EnterWriteLock();
 
+            try
+            {
+                _connectionHandlers.Add(handler);
+            }
+            finally
+            {
+                _readerWriterLock.ExitWriteLock();
+            }
+
+            handler.Closed += (o, e) =>
+            {
+                _logger.LogInformation("A connection ({ConnectionId}) has been closed", handler.Id);
+                _readerWriterLock.EnterWriteLock();
+                try
+                {
+                    _connectionHandlers.Remove(handler);
+                }
+                finally
+                {
+                    _readerWriterLock.ExitWriteLock();
+                }
+            };
+
+            _logger.LogInformation("A connection ({ConnectionId}) has been established", handler.Id);
             handler.StartHandler(_ctSource.Token);
         }
 
         List<IResult> errors = new List<IResult>();
-        foreach (var handler in _connectionHandlers)
+        foreach (var handler in ConnectionHandlers)
         {
             var handlerResult = await handler.RunHandlerAsync(_ctSource.Token);
 
@@ -146,6 +197,16 @@ public class ServerManager
             {
                 errors.Add(handlerResult);
             }
+        }
+
+        _readerWriterLock.EnterWriteLock();
+        try
+        {
+            _connectionHandlers.Clear();
+        }
+        finally
+        {
+            _readerWriterLock.ExitWriteLock();
         }
 
         _server.Close();

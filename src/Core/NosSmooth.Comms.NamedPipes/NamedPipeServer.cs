@@ -6,6 +6,7 @@
 
 using System.Data;
 using System.IO.Pipes;
+using System.Xml;
 using NosSmooth.Comms.Data;
 using Remora.Results;
 
@@ -38,9 +39,14 @@ public class NamedPipeServer : IServer
         get
         {
             _readerWriterLock.EnterReadLock();
-            var connections = new List<IConnection>(_connections);
-            _readerWriterLock.ExitReadLock();
-            return connections.AsReadOnly();
+            try
+            {
+                return _connections.ToArray();
+            }
+            finally
+            {
+                _readerWriterLock.ExitReadLock();
+            }
         }
     }
 
@@ -65,8 +71,14 @@ public class NamedPipeServer : IServer
 
         var connection = new NamedPipeConnection(this, serverStream);
         _readerWriterLock.EnterWriteLock();
-        _connections.Add(connection);
-        _readerWriterLock.ExitWriteLock();
+        try
+        {
+            _connections.Add(connection);
+        }
+        finally
+        {
+            _readerWriterLock.ExitWriteLock();
+        }
 
         return connection;
     }
@@ -83,8 +95,15 @@ public class NamedPipeServer : IServer
     public void Close()
     {
         _readerWriterLock.EnterReadLock();
-        var connections = new List<IConnection>(_connections);
-        _readerWriterLock.ExitReadLock();
+        IReadOnlyList<IConnection> connections;
+        try
+        {
+            connections = new List<IConnection>(_connections);
+        }
+        finally
+        {
+            _readerWriterLock.ExitReadLock();
+        }
 
         foreach (var connection in connections)
         {
@@ -105,7 +124,7 @@ public class NamedPipeServer : IServer
             _serverStream = serverStream;
         }
 
-        public ConnectionState State { get; private set; } = ConnectionState.Open;
+        public ConnectionState State => _serverStream.IsConnected ? ConnectionState.Open : ConnectionState.Closed;
 
         public Stream ReadStream => _serverStream;
 
@@ -115,11 +134,16 @@ public class NamedPipeServer : IServer
         {
             _serverStream.Disconnect();
             _serverStream.Close();
-            State = ConnectionState.Closed;
 
             _server._readerWriterLock.EnterWriteLock();
-            _server._connections.Remove(this);
-            _server._readerWriterLock.ExitWriteLock();
+            try
+            {
+                _server._connections.Remove(this);
+            }
+            finally
+            {
+                _server._readerWriterLock.ExitWriteLock();
+            }
         }
     }
 }

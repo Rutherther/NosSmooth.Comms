@@ -4,6 +4,7 @@
 //  Copyright (c) František Boháček. All rights reserved.
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Data;
 using MessagePack;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -51,7 +52,18 @@ public class ConnectionHandler
         _messageHandler = messageHandler;
         _options = options.Value;
         _logger = logger;
+        Id = Guid.NewGuid();
     }
+
+    /// <summary>
+    /// Gets the id of the connection.
+    /// </summary>
+    public Guid Id { get; }
+
+    /// <summary>
+    /// The connection has been closed.
+    /// </summary>
+    public event EventHandler? Closed;
 
     /// <summary>
     /// Gets the connection.
@@ -86,19 +98,19 @@ public class ConnectionHandler
     private async Task<Result> HandlerTask(CancellationToken ct)
     {
         using var reader = new MessagePackStreamReader(_connection.ReadStream, true);
-        while (!ct.IsCancellationRequested)
+        while (!ct.IsCancellationRequested && _connection.State == ConnectionState.Open)
         {
             try
             {
                 var read = await reader.ReadAsync(ct);
                 if (!read.HasValue)
                 {
-                    _logger.LogWarning("Message not read? ...");
                     continue;
                 }
 
                 var message = MessagePackSerializer.Typeless.Deserialize
                     (read.Value, _options, ct);
+
                 var result = await _messageHandler.HandleMessageAsync(this, message, ct);
 
                 if (!result.IsSuccess)
@@ -113,7 +125,48 @@ public class ConnectionHandler
         }
 
         _connection.Disconnect();
+        Closed?.Invoke(this, EventArgs.Empty);
         return Result.FromSuccess();
+    }
+
+    /// <summary>
+    /// Create a contract for sending a message,
+    /// <see cref="ResponseResult"/> will be returned back.
+    /// </summary>
+    /// <param name="handshake">The handshake request.</param>
+    /// <typeparam name="TMessage">The type of the message.</typeparam>
+    /// <returns>A contract representing send message operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown in case contract is created on the server. Clients do not send responses.</exception>
+    public IContract<HandshakeResponse, DefaultStates> ContractHanshake(HandshakeRequest handshake)
+    {
+        if (_contractor is null)
+        {
+            throw new InvalidOperationException
+            (
+                "Contracting is not supported, the other side does not send responses. Only server sends responses back."
+            );
+        }
+
+        return new ContractBuilder<HandshakeResponse, DefaultStates, NoErrors>(_contractor, DefaultStates.None)
+            .SetMoveAction
+            (
+                DefaultStates.None,
+                async (a, ct) =>
+                {
+                    var result = await SendMessageAsync(handshake, ct);
+                    if (!result.IsDefined(out _))
+                    {
+                        return Result<bool>.FromError(result);
+                    }
+
+                    return true;
+                },
+                DefaultStates.Requested
+            )
+            .SetMoveFilter<HandshakeResponse>
+                (DefaultStates.Requested, DefaultStates.ResponseObtained)
+            .SetFillData<HandshakeResponse>(DefaultStates.ResponseObtained, r => r)
+            .Build();
     }
 
     /// <summary>

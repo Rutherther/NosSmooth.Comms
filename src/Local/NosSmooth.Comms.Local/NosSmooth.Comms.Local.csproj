@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="NosSmooth.LocalBinding">
+        <HintPath>..\..\..\..\..\..\..\..\..\ruther\.nuget\packages\nossmooth.localbinding\1.0.0\lib\net7.0\NosSmooth.LocalBinding.dll</HintPath>
+      </Reference>
+      <Reference Include="Remora.Results">
+        <HintPath>..\..\..\..\..\..\..\..\..\ruther\.nuget\packages\remora.results\7.2.3\lib\net7.0\Remora.Results.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NosSmooth.Injector" Version="1.0.0" />
+      <PackageReference Include="NosSmooth.LocalBinding" Version="1.0.0" />
+    </ItemGroup>
+
+</Project>

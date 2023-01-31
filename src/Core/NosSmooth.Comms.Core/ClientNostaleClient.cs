@@ -8,8 +8,8 @@ using NosSmooth.Comms.Data;
 using NosSmooth.Comms.Data.Messages;
 using NosSmooth.Core.Client;
 using NosSmooth.Core.Commands;
+using NosSmooth.Core.Contracts;
 using NosSmooth.Packets;
-using NosSmooth.PacketSerializer;
 using NosSmooth.PacketSerializer.Abstractions.Attributes;
 using Remora.Results;
 
@@ -42,40 +42,45 @@ public class ClientNostaleClient : INostaleClient
     /// <inheritdoc />
     public async Task<Result> SendPacketAsync(IPacket packet, CancellationToken ct = default)
     {
-        var messageResponse = await _connection.SendMessageAsync
-            (new PacketMessage(PacketSource.Client, packet), ct);
-        return messageResponse.IsSuccess ? Result.FromSuccess() : Result.FromError(messageResponse);
+        var messageResponse = await _connection.ContractSendMessage
+                (new PacketMessage(PacketSource.Client, packet))
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
+        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }
 
     /// <inheritdoc />
     public async Task<Result> SendPacketAsync(string packetString, CancellationToken ct = default)
     {
-        var messageResponse = await _connection.SendMessageAsync
-            (new RawPacketMessage(PacketSource.Client, packetString), ct);
-        return messageResponse.IsSuccess ? Result.FromSuccess() : Result.FromError(messageResponse);
+        var messageResponse = await _connection.ContractSendMessage
+                (new RawPacketMessage(PacketSource.Client, packetString))
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
+        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }
 
     /// <inheritdoc />
     public async Task<Result> ReceivePacketAsync(string packetString, CancellationToken ct = default)
     {
-        var messageResponse = await _connection.SendMessageAsync
-            (new RawPacketMessage(PacketSource.Server, packetString), ct);
-        return messageResponse.IsSuccess ? Result.FromSuccess() : Result.FromError(messageResponse);
+        var messageResponse = await _connection.ContractSendMessage
+                (new RawPacketMessage(PacketSource.Server, packetString))
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
+        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }
 
     /// <inheritdoc />
     public async Task<Result> ReceivePacketAsync(IPacket packet, CancellationToken ct = default)
     {
-        var messageResponse = await _connection.SendMessageAsync
-            (new PacketMessage(PacketSource.Server, packet), ct);
-        return messageResponse.IsSuccess ? Result.FromSuccess() : Result.FromError(messageResponse);
+        var messageResponse = await _connection.ContractSendMessage
+                (new PacketMessage(PacketSource.Server, packet))
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
+        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }
 
     /// <inheritdoc />
     public async Task<Result> SendCommandAsync(ICommand command, CancellationToken ct = default)
     {
-        var messageResponse = await _connection.SendMessageAsync
-            (new CommandMessage(command), ct);
-        return messageResponse.IsSuccess ? Result.FromSuccess() : Result.FromError(messageResponse);
+        var messageResponse = await _connection.ContractSendMessage
+                (new CommandMessage(command))
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
+        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }
 }

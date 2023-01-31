@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.Abstractions", "src\Core\NosSmooth.Comms.Abstractions\NosSmooth.Comms.Abstractions.csproj", "{D3B6C5ED-9291-4215-8F8A-F3530849B896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.Local", "src\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj", "{7EFDE13A-1D42-44FE-A752-EBE6AC25E1DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.Inject", "src\Local\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj", "{7EFDE13A-1D42-44FE-A752-EBE6AC25E1DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.NamedPipes", "src\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj", "{9621D790-97FC-4E01-BB0C-CA1F33B4C934}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.Injector", "src\Local\NosSmooth.Comms.Injector\NosSmooth.Comms.Injector.csproj", "{A61B8A4F-EB81-41BC-8131-B45C0BCE0EA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NosSmooth.Comms.Local", "src\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj", "{A61B8A4F-EB81-41BC-8131-B45C0BCE0EA4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{EFE65101-4414-4966-813D-90FE3736F6B1}"
 EndProject

@@ -4,13 +4,16 @@
 //  Copyright (c) František Boháček. All rights reserved.
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NosSmooth.Comms.Core.Errors;
 using NosSmooth.Comms.Data;
 using NosSmooth.Comms.Data.Messages;
 using NosSmooth.Comms.Data.Responders;
+using NosSmooth.Core.Contracts;
 using Remora.Results;
 
 namespace NosSmooth.Comms.Core;
@@ -67,8 +70,19 @@ public class MessageHandler
 
     private async Task<Result> GenericHandleMessageAsync<TMessage>
         (ConnectionHandler connection, MessageWrapper<TMessage> wrappedMessage, CancellationToken ct)
+        where TMessage : notnull
     {
         var data = wrappedMessage.Data;
+
+        var contractor = _services.GetService<Contractor>();
+        if (contractor is not null)
+        {
+            var contractorResult = await contractor.Update(wrappedMessage.Data, ct);
+            if (!contractorResult.IsSuccess)
+            {
+                return contractorResult;
+            }
+        }
 
         await using var scope = _services.CreateAsyncScope();
         var injector = scope.ServiceProvider.GetRequiredService<ConnectionInjector>();
@@ -77,7 +91,8 @@ public class MessageHandler
 
         var responders = scope.ServiceProvider
             .GetServices<IMessageResponder<TMessage>>()
-            .Select(x => x.Respond(data, ct));
+            .Select(x => x.Respond(data, ct))
+            .ToArray();
 
         var results = (await Task.WhenAll(responders))
             .Where(x => !x.IsSuccess)
@@ -93,11 +108,17 @@ public class MessageHandler
 
         if (_respond && wrappedMessage.Data is not ResponseResult)
         {
-            var response = new ResponseResult(wrappedMessage.MessageId, result);
+            var responseResult = result;
+            if (responders.Length == 0)
+            {
+                responseResult = new MessageHandlerNotFoundError();
+            }
+
+            var response = new ResponseResult(wrappedMessage.MessageId, responseResult);
             var sentMessageResult = await connection.SendMessageAsync(response, ct);
             if (!sentMessageResult.IsSuccess)
             {
-                results.Add(sentMessageResult);
+                results.Add(Result.FromError(sentMessageResult));
                 result = results.Count switch
                 {
                     0 => Result.FromSuccess(),
