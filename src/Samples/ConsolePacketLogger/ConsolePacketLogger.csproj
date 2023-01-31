@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MessagePack" Version="2.4.59" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+      <PackageReference Include="Spectre.Console" Version="0.46.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Abstractions\NosSmooth.Comms.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj" />
+      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Tcp\NosSmooth.Comms.Tcp.csproj" />
+      <ProjectReference Include="..\..\Local\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj" />
+      <ProjectReference Include="..\..\Local\NosSmooth.Comms.LocalData\NosSmooth.Comms.LocalData.csproj" />
+      <ProjectReference Include="..\..\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj" />
+    </ItemGroup>
+
+</Project>
