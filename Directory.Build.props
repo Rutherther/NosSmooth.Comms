@@ -15,7 +15,20 @@
         <RepositoryUrl>https://github.com/Rutherther/NosSmooth.Comms</RepositoryUrl>
         <RepositoryBranch>main</RepositoryBranch>
         <PackageProjectUrl>https://github.com/Rutherther/NosSmooth.Comms</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)README.md">
+            <Pack>true</Pack>
+        </None>
+        <None Include="$(MSBuildThisFileDirectory)LICENSE">
+            <Pack>true</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+
 
     <ItemGroup>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.261">
