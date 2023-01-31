@@ -6,6 +6,9 @@
         <Nullable>enable</Nullable>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RepositoryUrl>https://github.com/Rutherther/NosSmooth.Comms/</RepositoryUrl>
+        <PackageLicenseUrl>MIT</PackageLicenseUrl>
+        <VersionPrefix>1.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>

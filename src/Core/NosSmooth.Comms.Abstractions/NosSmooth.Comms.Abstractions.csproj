@@ -5,6 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>NosSmooth.Comms.Data</RootNamespace>
+        <RepositoryUrl>https://github.com/Rutherther/NosSmooth.Comms/</RepositoryUrl>
+        <PackageLicenseUrl>MIT</PackageLicenseUrl>
+        <VersionPrefix>1.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,12 +15,6 @@
       <PackageReference Include="NosSmooth.Core" Version="3.3.1" />
       <PackageReference Include="NosSmooth.Packets" Version="3.5.0" />
       <PackageReference Include="NosSmooth.PacketSerializer.Abstractions" Version="1.3.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="NosSmooth.Core">
-        <HintPath>..\..\..\..\..\..\..\..\..\ruther\.nuget\packages\nossmooth.core\3.3.1\lib\net7.0\NosSmooth.Core.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>

@@ -4,16 +4,10 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RepositoryUrl>https://github.com/Rutherther/NosSmooth.Comms/</RepositoryUrl>
+        <PackageLicenseUrl>MIT</PackageLicenseUrl>
+        <VersionPrefix>1.0.0</VersionPrefix>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Reference Include="NosSmooth.LocalBinding">
-        <HintPath>..\..\..\..\..\..\..\..\..\ruther\.nuget\packages\nossmooth.localbinding\1.0.0\lib\net7.0\NosSmooth.LocalBinding.dll</HintPath>
-      </Reference>
-      <Reference Include="Remora.Results">
-        <HintPath>..\..\..\..\..\..\..\..\..\ruther\.nuget\packages\remora.results\7.2.3\lib\net7.0\Remora.Results.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
