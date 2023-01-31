@@ -9,7 +9,7 @@ using System.IO.Pipes;
 using NosSmooth.Comms.Data;
 using Remora.Results;
 
-namespace NosSmooth.Comms.NamedPipes;
+namespace NosSmooth.Comms.Core.NamedPipes;
 
 /// <summary>
 /// A client using named pipes.

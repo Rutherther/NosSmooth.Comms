@@ -14,8 +14,6 @@ using NosSmooth.Comms.Core.Extensions;
 using NosSmooth.Comms.Data;
 using NosSmooth.Comms.Inject.MessageResponders;
 using NosSmooth.Comms.Inject.PacketResponders;
-using NosSmooth.Comms.NamedPipes;
-using NosSmooth.Comms.NamedPipes.Extensions;
 using NosSmooth.Core.Extensions;
 using NosSmooth.Extensions.SharedBinding.Extensions;
 using NosSmooth.LocalClient.Extensions;

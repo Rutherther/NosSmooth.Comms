@@ -5,7 +5,7 @@
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using NosSmooth.Comms.Data.Responders;
-using NosSmooth.Comms.LocalData;
+using NosSmooth.Comms.Inject.Messages;
 using NosSmooth.LocalBinding;
 using NosSmooth.LocalBinding.Hooks;
 using NosSmooth.LocalBinding.Structs;

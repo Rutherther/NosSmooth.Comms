@@ -7,8 +7,8 @@
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NosSmooth.Comms.Core;
+using NosSmooth.Comms.Core.NamedPipes;
 using NosSmooth.Comms.Data;
-using NosSmooth.Comms.NamedPipes;
 using NosSmooth.Injector;
 using NosSmooth.LocalBinding;
 using NosSmooth.LocalBinding.Options;

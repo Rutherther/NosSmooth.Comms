@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,11 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Abstractions\NosSmooth.Comms.Abstractions.csproj" />
-      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
-      <ProjectReference Include="..\..\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj" />
-      <ProjectReference Include="..\..\Core\NosSmooth.Comms.Tcp\NosSmooth.Comms.Tcp.csproj" />
       <ProjectReference Include="..\..\Local\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj" />
-      <ProjectReference Include="..\..\Local\NosSmooth.Comms.LocalData\NosSmooth.Comms.LocalData.csproj" />
       <ProjectReference Include="..\..\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj" />
     </ItemGroup>
 

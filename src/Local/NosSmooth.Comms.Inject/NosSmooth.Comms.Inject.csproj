@@ -19,8 +19,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Abstractions\NosSmooth.Comms.Abstractions.csproj" />
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
-      <ProjectReference Include="..\..\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj" />
-      <ProjectReference Include="..\NosSmooth.Comms.LocalData\NosSmooth.Comms.LocalData.csproj" />
     </ItemGroup>
 
 </Project>

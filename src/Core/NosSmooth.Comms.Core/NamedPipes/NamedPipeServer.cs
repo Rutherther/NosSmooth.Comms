@@ -6,11 +6,10 @@
 
 using System.Data;
 using System.IO.Pipes;
-using System.Xml;
 using NosSmooth.Comms.Data;
 using Remora.Results;
 
-namespace NosSmooth.Comms.NamedPipes;
+namespace NosSmooth.Comms.Core.NamedPipes;
 
 /// <summary>
 /// A server using named pipes.

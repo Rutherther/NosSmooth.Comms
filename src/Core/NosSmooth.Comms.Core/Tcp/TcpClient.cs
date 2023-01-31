@@ -8,7 +8,7 @@ using System.Data;
 using NosSmooth.Comms.Data;
 using Remora.Results;
 
-namespace NosSmooth.Comms.Tcp;
+namespace NosSmooth.Comms.Core.Tcp;
 
 /// <summary>
 /// A client using tcp.

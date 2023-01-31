@@ -17,7 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
-      <ProjectReference Include="..\..\Core\NosSmooth.Comms.NamedPipes\NosSmooth.Comms.NamedPipes.csproj" />
+      <ProjectReference Include="..\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj" />
     </ItemGroup>
 
     <ItemGroup>
