@@ -19,8 +19,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\NosSmooth.Comms.Abstractions\NosSmooth.Comms.Abstractions.csproj" />
-      <ProjectReference Include="..\..\Local\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj" />
-      <ProjectReference Include="..\..\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj" />
+      <ProjectReference Include="..\..\Local\NosSmooth.Comms.Local\NosSmooth.Comms.Local.csproj">
+          <IncludeAssets>All</IncludeAssets>
+          <PrivateAssets>None</PrivateAssets>
+      </ProjectReference>
     </ItemGroup>
 
 </Project>
