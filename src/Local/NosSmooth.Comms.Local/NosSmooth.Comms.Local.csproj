@@ -4,7 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <VersionPrefix>1.0.2</VersionPrefix>
+        <VersionPrefix>1.0.3</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +16,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NosSmooth.Injector" Version="1.0.3"/>
+        <PackageReference Include="NosSmooth.Injector" Version="1.0.3">
+            <IncludeAssets>All</IncludeAssets>
+            <PrivateAssets>None</PrivateAssets>
+        </PackageReference>
+
         <PackageReference Include="NosSmooth.LocalBinding" Version="1.0.0"/>
     </ItemGroup>
 
