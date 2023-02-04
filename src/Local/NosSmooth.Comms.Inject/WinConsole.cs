@@ -20,7 +20,6 @@ internal static class WinConsole
     /// <param name="alwaysCreateNewConsole">Whether to create (true) or attach (false) to a console.</param>
     public static void Initialize(bool alwaysCreateNewConsole = true)
     {
-#if WINDOWS
         bool consoleAttached = true;
         if (alwaysCreateNewConsole
             || (AttachConsole(ATTACH_PARRENT) == 0
@@ -34,7 +33,6 @@ internal static class WinConsole
             InitializeOutStream();
             InitializeInStream();
         }
-#endif
     }
 
     /// <summary>
@@ -42,11 +40,9 @@ internal static class WinConsole
     /// </summary>
     public static void Close()
     {
-#if WINDOWS
         FreeConsole();
-#endif
     }
-#if WINDOWS
+
     private static void InitializeOutStream()
     {
         var fs = CreateFileStream("CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, FileAccess.Write);
@@ -138,7 +134,6 @@ internal static class WinConsole
 
     [DllImport("kernel32")]
     private static extern bool FreeConsole();
-#endif
 
     private const uint GENERIC_WRITE = 0x40000000;
     private const uint GENERIC_READ = 0x80000000;
