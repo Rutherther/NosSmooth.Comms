@@ -91,7 +91,7 @@ public class MessageHandler
 
         var responders = scope.ServiceProvider
             .GetServices<IMessageResponder<TMessage>>()
-            .Select(x => x.Respond(data, ct))
+            .Select(x => SafeCall(x.Respond(data, ct)))
             .ToArray();
 
         var results = (await Task.WhenAll(responders))
@@ -129,5 +129,17 @@ public class MessageHandler
         }
 
         return result;
+    }
+
+    private async Task<Result> SafeCall(Task<Result> respond)
+    {
+        try
+        {
+            return await respond;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
     }
 }
