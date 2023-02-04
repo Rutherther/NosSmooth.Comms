@@ -126,6 +126,7 @@ public class DllMain
                         .AddMessageResponder<FocusResponder>()
                         .AddMessageResponder<FollowResponder>()
                         .AddMessageResponder<HandshakeResponder>()
+                        .AddMessageResponder<ConsoleResponder>()
                         .AddMessageResponder<PacketResponder>();
                     s.AddHostedService<NosSmoothService>();
                 }
