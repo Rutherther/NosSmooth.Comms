@@ -61,6 +61,7 @@ public class ClientService : BackgroundService
         }
 
         var process = Process.GetProcessById(_options.ProcessId);
+        _injector.OpenConsole(process);
         var connectionResult = await _injector.EstablishNamedPipesConnectionAsync
             (process, stoppingToken, stoppingToken);
         if (!connectionResult.IsDefined(out var connection))
@@ -79,6 +80,18 @@ public class ClientService : BackgroundService
             _logger.LogResultError(handshakeResponseResult);
             _lifetime.StopApplication();
             return;
+        }
+
+        if (!handshakeResponse.ClientRunning)
+        {
+            _logger.LogError("The client is not running?");
+        }
+
+        if (handshakeResponse.InitializationErrorfulResult is not null
+            && !handshakeResponse.InitializationErrorfulResult.Value.IsSuccess)
+        {
+            _logger.LogError("Received an error from the Inject assembly that failed on initialization.");
+            _logger.LogResultError(handshakeResponse.InitializationErrorfulResult);
         }
 
         _logger.LogInformation
