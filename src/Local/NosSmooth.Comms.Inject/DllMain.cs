@@ -26,8 +26,6 @@ namespace NosSmooth.Comms.Inject;
 /// </summary>
 public class DllMain
 {
-    private const uint StdOutputHandle = 0xFFFFFFF5;
-
     private static bool _consoleAllocated;
     private static IHost? _host;
 
@@ -51,6 +49,7 @@ public class DllMain
     /// <summary>
     /// Open a console.
     /// </summary>
+    [UnmanagedCallersOnly(EntryPoint = "OpenConsole")]
     public static void OpenConsole()
     {
         WinConsole.Initialize(false);
@@ -59,6 +58,7 @@ public class DllMain
     /// <summary>
     /// Close a console.
     /// </summary>
+    [UnmanagedCallersOnly(EntryPoint = "CloseConsole")]
     public static void CloseConsole()
     {
         WinConsole.Close();
