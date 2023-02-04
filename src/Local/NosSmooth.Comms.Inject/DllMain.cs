@@ -114,6 +114,7 @@ public class DllMain
                 s =>
                 {
                     s
+                        .AddSingleton<ClientState>()
                         .AddSingleton<CallbackConfigRepository>()
                         .AddNostaleCore()
                         .AddLocalClient()
@@ -131,7 +132,7 @@ public class DllMain
             ).Build();
 
         await _host.StartAsync();
-        var hostTask = _host.RunAsync();
+        var hostTask = _host.WaitForShutdownAsync();
         var serverTask = host(_host);
 
         await Task.WhenAll(hostTask, serverTask);

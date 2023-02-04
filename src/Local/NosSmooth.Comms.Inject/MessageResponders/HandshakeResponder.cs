@@ -18,6 +18,7 @@ namespace NosSmooth.Comms.Inject.MessageResponders;
 /// </summary>
 public class HandshakeResponder : IMessageResponder<HandshakeRequest>
 {
+    private readonly ClientState _state;
     private readonly NosBrowserManager _browserManager;
     private readonly ConnectionHandler _connectionHandler;
     private readonly CallbackConfigRepository _config;
@@ -26,18 +27,21 @@ public class HandshakeResponder : IMessageResponder<HandshakeRequest>
     /// <summary>
     /// Initializes a new instance of the <see cref="HandshakeResponder"/> class.
     /// </summary>
+    /// <param name="state">The state of the application.</param>
     /// <param name="browserManager">The browser manager.</param>
     /// <param name="connectionHandler">The connection handler.</param>
     /// <param name="config">The config.</param>
     /// <param name="logger">The logger.</param>
     public HandshakeResponder
     (
+        ClientState state,
         NosBrowserManager browserManager,
         ConnectionHandler connectionHandler,
         CallbackConfigRepository config,
         ILogger<HandshakeResponder> logger
     )
     {
+        _state = state;
         _browserManager = browserManager;
         _connectionHandler = connectionHandler;
         _config = config;
@@ -61,7 +65,7 @@ public class HandshakeResponder : IMessageResponder<HandshakeRequest>
 
         var result = await _connectionHandler.SendMessageAsync
         (
-            new HandshakeResponse(playerId, playerName),
+            new HandshakeResponse(_state.IsRunning, _state.InitResult, playerId, playerName),
             ct
         );
 
