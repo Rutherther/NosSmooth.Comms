@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NosSmooth.Comms.Core;
 using NosSmooth.Comms.Core.NamedPipes;
 using NosSmooth.Comms.Data;
+using NosSmooth.Comms.Inject;
 using NosSmooth.Injector;
 using NosSmooth.LocalBinding;
 using NosSmooth.LocalBinding.Options;
@@ -124,13 +125,7 @@ public class CommsInjector
     public async Task<Result<Comms>> EstablishNamedPipesConnectionAsync
         (Process process, CancellationToken stopToken, CancellationToken ct)
     {
-        var injectResult = _injector.Inject
-        (
-            process,
-            Path.GetFullPath("NosSmooth.Comms.Inject.dll"),
-            "NosSmooth.Comms.Inject.DllMain, NosSmooth.Comms.Inject",
-            "EnableNamedPipes"
-        );
+        var injectResult = Inject(process, nameof(DllMain.EnableNamedPipes));
         if (!injectResult.IsSuccess)
         {
             return Result<Comms>.FromError(injectResult);
@@ -150,5 +145,39 @@ public class CommsInjector
 
         var nostaleClient = _resolver.Resolve(handler);
         return new Comms(process, handler, nostaleClient);
+    }
+
+    /// <summary>
+    /// Open a console in the target process.
+    /// </summary>
+    /// <remarks>
+    /// Log of inject will be printed to the console.
+    /// </remarks>
+    /// <param name="process">The process.</param>
+    /// <returns>A result that may or may not have succeeded.</returns>
+    public Result OpenConsole(Process process)
+    {
+        return Inject(process, nameof(DllMain.OpenConsole));
+    }
+
+    /// <summary>
+    /// Close a console in the target process.
+    /// </summary>
+    /// <param name="process">The process.</param>
+    /// <returns>A result that may or may not have succeeded.</returns>
+    public Result CloseConsole(Process process)
+    {
+        return Inject(process, nameof(DllMain.CloseConsole));
+    }
+
+    private Result Inject(Process process, string method)
+    {
+        return _injector.Inject
+        (
+            process,
+            Path.GetFullPath("NosSmooth.Comms.Inject.dll"),
+            "NosSmooth.Comms.Inject.DllMain, NosSmooth.Comms.Inject",
+            method
+        );
     }
 }

@@ -26,14 +26,10 @@ namespace NosSmooth.Comms.Inject;
 /// </summary>
 public class DllMain
 {
-    private static IHost? _host;
+    private const uint StdOutputHandle = 0xFFFFFFF5;
 
-    /// <summary>
-    /// Allocate console.
-    /// </summary>
-    /// <returns>Whether the operation was successful.</returns>
-    [DllImport("kernel32")]
-    public static extern bool AllocConsole();
+    private static bool _consoleAllocated;
+    private static IHost? _host;
 
     /// <summary>
     /// Enable named pipes server.
@@ -46,14 +42,30 @@ public class DllMain
             host =>
             {
                 var manager = host.Services.GetRequiredService<ServerManager>();
-                return manager.RunManagerAsync(host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping);
+                return manager.RunManagerAsync
+                    (host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping);
             }
         );
     }
 
+    /// <summary>
+    /// Open a console.
+    /// </summary>
+    public static void OpenConsole()
+    {
+        WinConsole.Initialize(false);
+    }
+
+    /// <summary>
+    /// Close a console.
+    /// </summary>
+    public static void CloseConsole()
+    {
+        WinConsole.Close();
+    }
+
     private static void Main(Func<IHost, Task<Result>> host)
     {
-        AllocConsole();
         new Thread
         (
             () =>
