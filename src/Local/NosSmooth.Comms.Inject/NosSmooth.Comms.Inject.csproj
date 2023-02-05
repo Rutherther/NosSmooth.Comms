@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnableDynamicLoading>true</EnableDynamicLoading>
-        <VersionPrefix>1.2.0</VersionPrefix>
+        <VersionPrefix>1.2.1</VersionPrefix>
         <PackageReleaseNotes>Add support for reporting errors using HandshakeResponse.
 Do not open a console by default, add a support for opening a console using a command or by calling OpenConsole, CloseConsole inside of DllMain.</PackageReleaseNotes>
     </PropertyGroup>
@@ -13,6 +13,7 @@ Do not open a console by default, add a support for opening a console using a co
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+      <PackageReference Include="NosSmooth.Core" Version="4.0.2" />
       <PackageReference Include="NosSmooth.Extensions.SharedBinding" Version="0.1.0" />
       <PackageReference Include="NosSmooth.LocalBinding" Version="1.0.0" />
       <PackageReference Include="NosSmooth.LocalClient" Version="1.1.0" />
