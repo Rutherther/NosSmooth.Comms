@@ -12,6 +12,7 @@ using NosSmooth.Comms.Core.Extensions;
 using NosSmooth.Comms.Local;
 using NosSmooth.Comms.Local.Extensions;
 using NosSmooth.Core.Extensions;
+using NosSmooth.Core.Packets;
 using NosSmooth.Data.Abstractions;
 using NosSmooth.LocalBinding;
 using Spectre.Console;
@@ -66,7 +67,7 @@ public static class Program
                     .AddSingleClientHandling()
                     .AddLocalComms()
                     .AddHostedService<ClientService>()
-                    .AddPacketResponder<EveryPacketResponder>()
+                    .AddScoped<IRawPacketResponder, EveryPacketResponder>()
             )
             .Build();
 

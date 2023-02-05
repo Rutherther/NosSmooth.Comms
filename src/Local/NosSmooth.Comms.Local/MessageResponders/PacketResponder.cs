@@ -19,7 +19,7 @@ namespace NosSmooth.Comms.Local.MessageResponders;
 public class PacketResponder : IMessageResponder<PacketMessage>
 {
     private readonly INostaleClient _client;
-    private readonly PacketHandler _packetHandler;
+    private readonly IPacketHandler _packetHandler;
     private readonly IPacketSerializer _serializer;
 
     /// <summary>
@@ -28,7 +28,7 @@ public class PacketResponder : IMessageResponder<PacketMessage>
     /// <param name="client">The nostale client.</param>
     /// <param name="packetHandler">The packet handler.</param>
     /// <param name="serializer">The serializer.</param>
-    public PacketResponder(INostaleClient client, PacketHandler packetHandler, IPacketSerializer serializer)
+    public PacketResponder(INostaleClient client, IPacketHandler packetHandler, IPacketSerializer serializer)
     {
         _client = client;
         _packetHandler = packetHandler;
@@ -48,7 +48,6 @@ public class PacketResponder : IMessageResponder<PacketMessage>
         (
             _client,
             message.Source,
-            message.Packet,
             serialized,
             ct
         );

@@ -17,13 +17,13 @@ namespace NosSmooth.Comms.Inject.MessageResponders;
 /// </summary>
 public class PacketResponder : IMessageResponder<RawPacketMessage>, IMessageResponder<PacketMessage>
 {
-    private readonly INostaleClient _client;
+    private readonly ManagedNostaleClient _client;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PacketResponder"/> class.
     /// </summary>
     /// <param name="client">The NosTale client.</param>
-    public PacketResponder(INostaleClient client)
+    public PacketResponder(ManagedNostaleClient client)
     {
         _client = client;
     }

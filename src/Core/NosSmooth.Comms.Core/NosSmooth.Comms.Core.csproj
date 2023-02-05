@@ -4,13 +4,13 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionPrefix>1.1.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="MessagePack" Version="2.4.59" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-      <PackageReference Include="NosSmooth.Core" Version="3.3.1" />
+      <PackageReference Include="NosSmooth.Core" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>

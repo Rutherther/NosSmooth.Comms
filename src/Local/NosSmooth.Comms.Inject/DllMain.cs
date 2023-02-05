@@ -116,7 +116,7 @@ public class DllMain
                     s
                         .AddSingleton<ClientState>()
                         .AddSingleton<CallbackConfigRepository>()
-                        .AddNostaleCore()
+                        .AddManagedNostaleCore()
                         .AddLocalClient()
                         .ShareNosSmooth()
                         .AddNamedPipeServer(p => $"NosSmooth_{Process.GetCurrentProcess().Id}")

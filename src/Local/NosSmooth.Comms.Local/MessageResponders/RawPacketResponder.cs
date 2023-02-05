@@ -23,7 +23,7 @@ namespace NosSmooth.Comms.Local.MessageResponders;
 public class RawPacketResponder : IMessageResponder<RawPacketMessage>
 {
     private readonly INostaleClient _client;
-    private readonly PacketHandler _packetHandler;
+    private readonly IPacketHandler _packetHandler;
     private readonly IPacketSerializer _serializer;
     private readonly ILogger<RawPacketResponder> _logger;
 
@@ -34,7 +34,7 @@ public class RawPacketResponder : IMessageResponder<RawPacketMessage>
     /// <param name="packetHandler">The packet handler.</param>
     /// <param name="serializer">The serializer.</param>
     /// <param name="logger">The logger.</param>
-    public RawPacketResponder(INostaleClient client, PacketHandler packetHandler, IPacketSerializer serializer, ILogger<RawPacketResponder> logger)
+    public RawPacketResponder(INostaleClient client, IPacketHandler packetHandler, IPacketSerializer serializer, ILogger<RawPacketResponder> logger)
     {
         _client = client;
         _packetHandler = packetHandler;
@@ -45,32 +45,10 @@ public class RawPacketResponder : IMessageResponder<RawPacketMessage>
     /// <inheritdoc />
     public Task<Result> Respond(RawPacketMessage message, CancellationToken ct = default)
     {
-        var deserializedResult = _serializer.Deserialize(message.Packet, message.Source);
-        IPacket packet;
-
-        if (!deserializedResult.IsSuccess)
-        {
-            if (deserializedResult.Error is not PacketConverterNotFoundError)
-            {
-                _logger.LogWarning("Could not parse {Packet}. Reason:", message.Packet);
-                _logger.LogResultError(deserializedResult);
-                packet = new ParsingFailedPacket(deserializedResult, message.Packet);
-            }
-            else
-            {
-                packet = new UnresolvedPacket(message.Packet.Split(' ')[0], message.Packet);
-            }
-        }
-        else
-        {
-            packet = deserializedResult.Entity;
-        }
-
         return _packetHandler.HandlePacketAsync
         (
             _client,
             message.Source,
-            packet,
             message.Packet,
             ct
         );

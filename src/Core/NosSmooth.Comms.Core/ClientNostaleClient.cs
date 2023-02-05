@@ -40,15 +40,6 @@ public class ClientNostaleClient : INostaleClient
     }
 
     /// <inheritdoc />
-    public async Task<Result> SendPacketAsync(IPacket packet, CancellationToken ct = default)
-    {
-        var messageResponse = await _connection.ContractSendMessage
-                (new PacketMessage(PacketSource.Client, packet))
-            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
-        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
-    }
-
-    /// <inheritdoc />
     public async Task<Result> SendPacketAsync(string packetString, CancellationToken ct = default)
     {
         var messageResponse = await _connection.ContractSendMessage
@@ -62,15 +53,6 @@ public class ClientNostaleClient : INostaleClient
     {
         var messageResponse = await _connection.ContractSendMessage
                 (new RawPacketMessage(PacketSource.Server, packetString))
-            .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
-        return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
-    }
-
-    /// <inheritdoc />
-    public async Task<Result> ReceivePacketAsync(IPacket packet, CancellationToken ct = default)
-    {
-        var messageResponse = await _connection.ContractSendMessage
-                (new PacketMessage(PacketSource.Server, packet))
             .WaitForAsync(DefaultStates.ResponseObtained, ct: ct);
         return messageResponse.IsSuccess ? messageResponse.Entity : Result.FromError(messageResponse);
     }

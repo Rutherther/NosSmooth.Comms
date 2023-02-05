@@ -7,7 +7,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using NosSmooth.Comms.Core.Extensions;
 using NosSmooth.Comms.Local.MessageResponders;
+using NosSmooth.Core.Contracts;
 using NosSmooth.Injector;
+using NosSmooth.PacketSerializer.Extensions;
 
 namespace NosSmooth.Comms.Local.Extensions;
 
@@ -24,6 +26,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddLocalComms(this IServiceCollection serviceCollection)
     {
         return serviceCollection
+            .AddPacketSerialization()
+            .AddSingleton<Contractor>()
             .AddMultiClientHandling()
             .AddMessageResponder<PacketResponder>()
             .AddMessageResponder<RawPacketResponder>()

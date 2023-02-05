@@ -12,11 +12,10 @@ using Remora.Results;
 namespace ConsolePacketLogger;
 
 /// <inheritdoc />
-public class EveryPacketResponder : IEveryPacketResponder
+public class EveryPacketResponder : IRawPacketResponder
 {
     /// <inheritdoc />
-    public Task<Result> Respond<TPacket>(PacketEventArgs<TPacket> packetArgs, CancellationToken ct = default)
-        where TPacket : IPacket
+    public Task<Result> Respond(PacketEventArgs packetArgs, CancellationToken ct = default)
     {
         Console.WriteLine((packetArgs.Source == PacketSource.Server ? "[Recv]\t" : "[Sent]\t") + packetArgs.PacketString);
         return Task.FromResult(Result.FromSuccess());
