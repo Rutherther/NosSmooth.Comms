@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj"/>
+        <ProjectReference Include="..\..\Core\NosSmooth.Comms.Core\NosSmooth.Comms.Core.csproj" />
         <ProjectReference Include="..\NosSmooth.Comms.Inject\NosSmooth.Comms.Inject.csproj">
             <IncludeAssets>All</IncludeAssets>
             <PrivateAssets>None</PrivateAssets>
@@ -17,12 +17,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NosSmooth.Injector" Version="1.0.3">
+        <PackageReference Include="NosSmooth.Injector" Version="1.1.0">
             <IncludeAssets>All</IncludeAssets>
             <PrivateAssets>None</PrivateAssets>
         </PackageReference>
 
-        <PackageReference Include="NosSmooth.LocalBinding" Version="1.0.0"/>
+        <PackageReference Include="NosSmooth.LocalBinding" Version="1.0.1" />
     </ItemGroup>
 
 </Project>
