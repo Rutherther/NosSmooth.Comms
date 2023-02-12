@@ -4,7 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <VersionPrefix>1.2.2</VersionPrefix>
+        <VersionPrefix>1.2.3</VersionPrefix>
         <PackageReleaseNotes>Update Inject version to 1.1.0.</PackageReleaseNotes>
     </PropertyGroup>
 
