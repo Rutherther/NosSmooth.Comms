@@ -6,4 +6,8 @@
 
 namespace NosSmooth.Comms.Inject.Messages;
 
+/// <summary>
+/// Focus the given entity.
+/// </summary>
+/// <param name="EntityId">The id of the entity, unfocus if null.</param>
 public record FocusMessage(long? EntityId);

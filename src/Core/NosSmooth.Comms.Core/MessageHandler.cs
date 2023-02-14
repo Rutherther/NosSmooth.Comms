@@ -48,12 +48,7 @@ public class MessageHandler
         (ConnectionHandler connection, object wrappedMessage, CancellationToken ct)
     {
         var wrappedType = wrappedMessage.GetType();
-        if (!wrappedType.IsGenericType)
-        {
-            return new GenericError($"Message type is not MessageWrapper<>, but {wrappedType.FullName}");
-        }
-
-        if (wrappedType.GetGenericTypeDefinition() != typeof(MessageWrapper<>))
+        if (!wrappedType.IsGenericType || wrappedType.GetGenericTypeDefinition() != typeof(MessageWrapper<>))
         {
             return new GenericError($"Message type is not MessageWrapper<>, but {wrappedType.FullName}");
         }

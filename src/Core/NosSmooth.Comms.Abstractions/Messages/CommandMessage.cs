@@ -8,4 +8,8 @@ using NosSmooth.Core.Commands;
 
 namespace NosSmooth.Comms.Data.Messages;
 
+/// <summary>
+/// Send a command.
+/// </summary>
+/// <param name="Command">The command to send.</param>
 public record CommandMessage(ICommand Command);

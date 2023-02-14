@@ -6,4 +6,8 @@
 
 namespace NosSmooth.Comms.Inject.Messages;
 
+/// <summary>
+/// Follow the given entity, unfollow if null.
+/// </summary>
+/// <param name="EntityId">The id of the entity, unfollow if null.</param>
 public record FollowMessage(long? EntityId);

@@ -6,4 +6,8 @@
 
 namespace NosSmooth.Comms.Inject.Messages;
 
+/// <summary>
+/// A message used for opening or closing console.
+/// </summary>
+/// <param name="Open">Whether to open the console.</param>
 public record ConsoleMessage(bool Open);
