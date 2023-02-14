@@ -7,6 +7,7 @@
 using NosSmooth.Comms.Data.Responders;
 using NosSmooth.Comms.Inject.Messages;
 using NosSmooth.LocalBinding;
+using NosSmooth.LocalBinding.Errors;
 using NosSmooth.LocalBinding.Hooks;
 using NosSmooth.LocalBinding.Structs;
 using Remora.Results;
@@ -40,9 +41,14 @@ public class FollowResponder : IMessageResponder<FollowMessage>
     public async Task<Result> Respond(FollowMessage message, CancellationToken ct = default)
     {
         MapBaseObj? entity = null;
+        if (!_browserManager.SceneManager.TryGet(out var sceneManager))
+        {
+            return new OptionalNotPresentError(nameof(SceneManager));
+        }
+
         if (message.EntityId is not null)
         {
-            var entityResult = _browserManager.SceneManager.FindEntity(message.EntityId.Value);
+            var entityResult = sceneManager.FindEntity(message.EntityId.Value);
 
             if (!entityResult.IsDefined(out entity))
             {
@@ -56,13 +62,30 @@ public class FollowResponder : IMessageResponder<FollowMessage>
             {
                 if (entity is null)
                 {
-                    _hookManager.EntityUnfollow.WrapperFunction();
+                    return _hookManager.EntityUnfollow.MapResult
+                    (
+                        unfollow => unfollow.WrapperFunction.MapResult
+                        (
+                            wrapper =>
+                            {
+                                wrapper();
+                                return Result.FromSuccess();
+                            }
+                        )
+                    );
                 }
-                else
-                {
-                    _hookManager.EntityFollow.WrapperFunction(entity);
-                }
-                return Result.FromSuccess();
+
+                return _hookManager.EntityFollow.MapResult
+                (
+                    unfollow => unfollow.WrapperFunction.MapResult
+                    (
+                        wrapper =>
+                        {
+                            wrapper(entity);
+                            return Result.FromSuccess();
+                        }
+                    )
+                );
             },
             ct
         );

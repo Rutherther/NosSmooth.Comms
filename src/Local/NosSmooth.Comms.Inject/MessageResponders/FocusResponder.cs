@@ -7,6 +7,7 @@
 using NosSmooth.Comms.Data.Responders;
 using NosSmooth.Comms.Inject.Messages;
 using NosSmooth.LocalBinding;
+using NosSmooth.LocalBinding.Errors;
 using NosSmooth.LocalBinding.Hooks;
 using NosSmooth.LocalBinding.Structs;
 using Remora.Results;
@@ -20,7 +21,7 @@ public class FocusResponder : IMessageResponder<FocusMessage>
 {
     private readonly NosBrowserManager _browserManager;
     private readonly NosThreadSynchronizer _synchronizer;
-    private readonly IEntityFocusHook _focusHook;
+    private readonly Optional<IEntityFocusHook> _focusHook;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FocusResponder"/> class.
@@ -29,7 +30,7 @@ public class FocusResponder : IMessageResponder<FocusMessage>
     /// <param name="synchronizer">The synchronizer.</param>
     /// <param name="focusHook">The focus hook.</param>
     public FocusResponder
-        (NosBrowserManager browserManager, NosThreadSynchronizer synchronizer, IEntityFocusHook focusHook)
+        (NosBrowserManager browserManager, NosThreadSynchronizer synchronizer, Optional<IEntityFocusHook> focusHook)
     {
         _browserManager = browserManager;
         _synchronizer = synchronizer;
@@ -40,9 +41,14 @@ public class FocusResponder : IMessageResponder<FocusMessage>
     public async Task<Result> Respond(FocusMessage message, CancellationToken ct = default)
     {
         MapBaseObj? entity = null;
+        if (!_browserManager.SceneManager.TryGet(out var sceneManager))
+        {
+            return new OptionalNotPresentError(nameof(SceneManager));
+        }
+
         if (message.EntityId is not null)
         {
-            var entityResult = _browserManager.SceneManager.FindEntity(message.EntityId.Value);
+            var entityResult = sceneManager.FindEntity(message.EntityId.Value);
 
             if (!entityResult.IsDefined(out entity))
             {
@@ -52,11 +58,17 @@ public class FocusResponder : IMessageResponder<FocusMessage>
 
         return await _synchronizer.SynchronizeAsync
         (
-            () =>
-            {
-                _focusHook.WrapperFunction(entity);
-                return Result.FromSuccess();
-            },
+            () => _focusHook.MapResult
+            (
+                hook => hook.WrapperFunction.MapResult
+                (
+                    wrapper =>
+                    {
+                        wrapper(entity);
+                        return Result.FromSuccess();
+                    }
+                )
+            ),
             ct
         );
     }

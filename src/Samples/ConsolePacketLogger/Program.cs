@@ -50,8 +50,8 @@ public static class Program
                 .Title("Choose NosTale process to log packets from.")
                 .UseConverter
                 (
-                    x => x.IsInGame
-                        ? $"{x.PlayerManager.Player.Name} ({x.Process.ProcessName} - {x.Process.Id})"
+                    x => x.IsInGame.Get()
+                        ? $"{x.PlayerManager.Get().Player.Name} ({x.Process.ProcessName} - {x.Process.Id})"
                         : $"Not in game ({x.Process.ProcessName} - {x.Process.Id})"
                 )
                 .AddChoices(nostaleProcesses)

@@ -57,10 +57,12 @@ public class HandshakeResponder : IMessageResponder<HandshakeRequest>
         string? playerName = null;
         long? playerId = null;
 
-        if (_browserManager.IsInGame)
+        if (_browserManager.PlayerManager.TryGet(out var playerManager) &&
+            _browserManager.IsInGame.TryGet(out var isInGame) &&
+            isInGame)
         {
-            playerName = _browserManager.PlayerManager.Player.Name;
-            playerId = _browserManager.PlayerManager.PlayerId;
+            playerName = playerManager.Player.Name;
+            playerId = playerManager.PlayerId;
         }
 
         var result = await _connectionHandler.SendMessageAsync
