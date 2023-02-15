@@ -12,10 +12,12 @@ using Microsoft.Extensions.Logging;
 using NosSmooth.Comms.Core;
 using NosSmooth.Comms.Core.Extensions;
 using NosSmooth.Comms.Data;
+using NosSmooth.Comms.Inject.Extensions;
 using NosSmooth.Comms.Inject.MessageResponders;
 using NosSmooth.Comms.Inject.PacketResponders;
 using NosSmooth.Core.Extensions;
 using NosSmooth.Extensions.SharedBinding.Extensions;
+using NosSmooth.LocalBinding.Options;
 using NosSmooth.LocalClient.Extensions;
 using Remora.Results;
 
@@ -98,6 +100,7 @@ public class DllMain
             return;
         }
 
+        var clientState = new ClientState();
         _host = Host.CreateDefaultBuilder()
             .UseConsoleLifetime()
             .ConfigureLogging
@@ -114,7 +117,7 @@ public class DllMain
                 s =>
                 {
                     s
-                        .AddSingleton<ClientState>()
+                        .AddSingleton<ClientState>(_ => clientState)
                         .AddSingleton<CallbackConfigRepository>()
                         .AddManagedNostaleCore()
                         .AddLocalClient()
@@ -127,7 +130,15 @@ public class DllMain
                         .AddMessageResponder<FollowResponder>()
                         .AddMessageResponder<HandshakeResponder>()
                         .AddMessageResponder<ConsoleResponder>()
-                        .AddMessageResponder<PacketResponder>();
+                        .AddMessageResponder<PacketResponder>()
+                        .AddMessageResponder<RunClientResponder>()
+                        .Configure<HookManagerOptions>(clientState.HookOptions.CopyProperties)
+                        .Configure<PlayerManagerOptions>(clientState.PlayerManagerOptions.CopyProperties)
+                        .Configure<NetworkManagerOptions>(opts => clientState.NetworkManagerOptions.CopyProperties(opts))
+                        .Configure<SceneManagerOptions>(clientState.SceneManagerOptions.CopyProperties)
+                        .Configure<UnitManagerOptions>(clientState.UnitManagerOptions.CopyProperties)
+                        .Configure<NtClientOptions>(clientState.NtClientOptions.CopyProperties)
+                        .Configure<PetManagerOptions>(clientState.PetManagerOptions.CopyProperties);
                     s.AddHostedService<NosSmoothService>();
                 }
             ).Build();

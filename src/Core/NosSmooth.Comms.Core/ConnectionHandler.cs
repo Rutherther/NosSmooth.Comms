@@ -133,11 +133,14 @@ public class ConnectionHandler
     /// Create a contract for sending a message,
     /// <see cref="ResponseResult"/> will be returned back.
     /// </summary>
-    /// <param name="handshake">The handshake request.</param>
+    /// <param name="message">The request message.</param>
+    /// <param name="filter">The filter to check if the response is meant for the request.</param>
     /// <typeparam name="TMessage">The type of the message.</typeparam>
+    /// <typeparam name="TResponse">The type of the response.</typeparam>
     /// <returns>A contract representing send message operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown in case contract is created on the server. Clients do not send responses.</exception>
-    public IContract<HandshakeResponse, DefaultStates> ContractHanshake(HandshakeRequest handshake)
+    public IContract<TResponse, DefaultStates> ContractCustomResponse<TMessage, TResponse>(TMessage message, Func<TResponse, bool> filter)
+        where TResponse : notnull
     {
         if (_contractor is null)
         {
@@ -147,13 +150,13 @@ public class ConnectionHandler
             );
         }
 
-        return new ContractBuilder<HandshakeResponse, DefaultStates, NoErrors>(_contractor, DefaultStates.None)
+        return new ContractBuilder<TResponse, DefaultStates, NoErrors>(_contractor, DefaultStates.None)
             .SetMoveAction
             (
                 DefaultStates.None,
                 async (a, ct) =>
                 {
-                    var result = await SendMessageAsync(handshake, ct);
+                    var result = await SendMessageAsync(message, ct);
                     if (!result.IsDefined(out _))
                     {
                         return Result<bool>.FromError(result);
@@ -163,11 +166,22 @@ public class ConnectionHandler
                 },
                 DefaultStates.Requested
             )
-            .SetMoveFilter<HandshakeResponse>
-                (DefaultStates.Requested, DefaultStates.ResponseObtained)
-            .SetFillData<HandshakeResponse>(DefaultStates.ResponseObtained, r => r)
+            .SetMoveFilter<TResponse>
+                (DefaultStates.Requested, filter, DefaultStates.ResponseObtained)
+            .SetFillData<TResponse>(DefaultStates.ResponseObtained, r => r)
             .Build();
     }
+
+    /// <summary>
+    /// Create a contract for sending a message,
+    /// <see cref="ResponseResult"/> will be returned back.
+    /// </summary>
+    /// <param name="handshake">The handshake request.</param>
+    /// <typeparam name="TMessage">The type of the message.</typeparam>
+    /// <returns>A contract representing send message operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown in case contract is created on the server. Clients do not send responses.</exception>
+    public IContract<HandshakeResponse, DefaultStates> ContractHanshake(HandshakeRequest handshake)
+        => ContractCustomResponse<HandshakeRequest, HandshakeResponse>(handshake, _ => true);
 
     /// <summary>
     /// Create a contract for sending a message,

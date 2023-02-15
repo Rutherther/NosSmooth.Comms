@@ -19,7 +19,6 @@ namespace NosSmooth.Comms.Inject.MessageResponders;
 public class HandshakeResponder : IMessageResponder<HandshakeRequest>
 {
     private readonly ClientState _state;
-    private readonly NosBrowserManager _browserManager;
     private readonly ConnectionHandler _connectionHandler;
     private readonly CallbackConfigRepository _config;
     private readonly ILogger<HandshakeResponder> _logger;
@@ -35,14 +34,12 @@ public class HandshakeResponder : IMessageResponder<HandshakeRequest>
     public HandshakeResponder
     (
         ClientState state,
-        NosBrowserManager browserManager,
         ConnectionHandler connectionHandler,
         CallbackConfigRepository config,
         ILogger<HandshakeResponder> logger
     )
     {
         _state = state;
-        _browserManager = browserManager;
         _connectionHandler = connectionHandler;
         _config = config;
         _logger = logger;
@@ -54,20 +51,14 @@ public class HandshakeResponder : IMessageResponder<HandshakeRequest>
         var config = new CallbackConfig(message.SendRawPackets, message.SendDeserializedPackets);
         _config.SetConfig(_connectionHandler, config);
 
-        string? playerName = null;
-        long? playerId = null;
-
-        if (_browserManager.PlayerManager.TryGet(out var playerManager) &&
-            _browserManager.IsInGame.TryGet(out var isInGame) &&
-            isInGame)
-        {
-            playerName = playerManager.Player.Name;
-            playerId = playerManager.PlayerId;
-        }
-
         var result = await _connectionHandler.SendMessageAsync
         (
-            new HandshakeResponse(_state.IsRunning, _state.InitResult, playerId, playerName),
+            new HandshakeResponse
+            (
+                _state.IsRunning,
+                _state.InitResult,
+                _state.BindingResult
+            ),
             ct
         );
 

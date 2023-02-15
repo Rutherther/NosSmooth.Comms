@@ -10,9 +10,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NosSmooth.Comms.Core;
 using NosSmooth.Comms.Data.Messages;
+using NosSmooth.Comms.Inject.Messages;
 using NosSmooth.Comms.Local;
+using NosSmooth.Comms.Local.Extensions;
 using NosSmooth.Core.Contracts;
 using NosSmooth.Core.Extensions;
+using NosSmooth.LocalBinding.Options;
+using NosSmooth.PacketSerializer.Abstractions.Attributes;
 using NosSmooth.PacketSerializer.Extensions;
 using NosSmooth.PacketSerializer.Packets;
 
@@ -84,20 +88,47 @@ public class ClientService : BackgroundService
 
         if (!handshakeResponse.ClientRunning)
         {
-            _logger.LogError("The client is not running?");
+            _logger.LogInformation("The client is not running, going to start it");
         }
-
-        if (handshakeResponse.InitializationErrorfulResult is not null
-            && !handshakeResponse.InitializationErrorfulResult.Value.IsSuccess)
+        else
         {
-            _logger.LogError("Received an error from the Inject assembly that failed on initialization.");
-            _logger.LogResultError(handshakeResponse.InitializationErrorfulResult);
+            if (handshakeResponse.InitializationResult is not null
+                && !handshakeResponse.InitializationResult.Value.IsSuccess)
+            {
+                _logger.LogError("Received an error from the Inject assembly that failed on initialization.");
+                _logger.LogResultError(handshakeResponse.InitializationResult);
+            }
         }
 
-        _logger.LogInformation
-        (
-            $"Connected to {handshakeResponse.CharacterName ?? "Not in game"} ({handshakeResponse.CharacterId?.ToString() ?? "Not in game"})"
-        );
+        // should be run only if !handshakeResponse.ClientRunning
+        // but will work correctly even if client is already running.
+        var clientRunResult = await connection.Connection.ContractRunClient(new RunClientRequest())
+            .WaitForAsync(DefaultStates.ResponseObtained, ct: stoppingToken);
+
+        if (!clientRunResult.IsDefined(out var clientRun))
+        {
+            _logger.LogResultError(clientRunResult);
+            _lifetime.StopApplication();
+            return;
+        }
+
+        if (clientRun.InitializationResult is null)
+        {
+            _logger.LogError("Huh, the client did not return a result?");
+        }
+
+        if (!(clientRun.BindingManagerResult?.IsSuccess ?? true))
+        {
+            _logger.LogError("Binding manager threw an error.");
+            _logger.LogResultError(clientRun.BindingManagerResult);
+        }
+
+        if (!(clientRun.InitializationResult?.IsSuccess ?? true))
+        {
+            _logger.LogResultError(clientRun.InitializationResult);
+        }
+
+        _logger.LogInformation($"Connected to NosTale");
 
         var runResult = await connection.Connection.RunHandlerAsync(stoppingToken);
         if (!runResult.IsSuccess)

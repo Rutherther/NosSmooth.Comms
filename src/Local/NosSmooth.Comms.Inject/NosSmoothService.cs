@@ -5,6 +5,7 @@
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,6 @@ public class NosSmoothService : BackgroundService
     private readonly IServiceProvider _services;
     private readonly ClientState _state;
     private readonly IPacketTypesRepository _packetTypesRepository;
-    private readonly NosBindingManager _bindingManager;
     private readonly ILogger<NosSmoothService> _logger;
 
     /// <summary>
@@ -34,27 +34,38 @@ public class NosSmoothService : BackgroundService
     /// <param name="services">The services.</param>
     /// <param name="state">The state of the application.</param>
     /// <param name="packetTypesRepository">The packet types repository.</param>
-    /// <param name="bindingManager">The binding manager.</param>
     /// <param name="logger">The logger.</param>
     public NosSmoothService
     (
         IServiceProvider services,
         ClientState state,
         IPacketTypesRepository packetTypesRepository,
-        NosBindingManager bindingManager,
         ILogger<NosSmoothService> logger
     )
     {
         _services = services;
         _state = state;
         _packetTypesRepository = packetTypesRepository;
-        _bindingManager = bindingManager;
         _logger = logger;
     }
 
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var ctSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, _state.Starting.Token);
+        try
+        {
+            await Task.Delay(-1, ctSource.Token);
+        }
+        catch (Exception e)
+        {
+        }
+
+        if (stoppingToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         var packetResult = _packetTypesRepository.AddDefaultPackets();
         if (!packetResult.IsSuccess)
         {
@@ -64,20 +75,39 @@ public class NosSmoothService : BackgroundService
             _logger.LogResultError(packetResult);
         }
 
-        var bindingResult = _bindingManager.Initialize();
+        var bindingResult = _services.GetRequiredService<NosBindingManager>().Initialize();
         if (!bindingResult.IsSuccess)
         {
             _state.InitResult = Result.FromError(bindingResult.Error);
-            _logger.LogError("Could not initialize the binding manager");
+            _logger.LogError("Could not initialize the binding manager.");
             _logger.LogResultError(bindingResult);
-            await Task.Delay(-1, stoppingToken);
-            return;
+            _state.BindingResult = Result.FromError
+                (new GenericError("Binding manager not initialized correctly."), bindingResult);
+        }
+        else
+        {
+            _state.BindingResult = Result.FromSuccess();
         }
 
-        _state.IsRunning = true;
         var nostaleClient = _services.GetRequiredService<INostaleClient>();
-        var runResult = await nostaleClient.RunAsync(stoppingToken);
-        _state.IsRunning = false;
+        var runTask = nostaleClient.RunAsync(stoppingToken);
+        await Task.Delay(10, stoppingToken);
+        Result runResult;
+        if (runTask.IsCompleted)
+        {
+            runResult = await runTask;
+            _state.InitResult = runResult;
+            _state.Started.Cancel();
+        }
+        else
+        {
+            _state.IsRunning = true;
+            _state.InitResult = Result.FromSuccess();
+            _state.Started.Cancel();
+
+            runResult = await runTask;
+        }
+
         if (!runResult.IsSuccess)
         {
             _state.InitResult = runResult;
