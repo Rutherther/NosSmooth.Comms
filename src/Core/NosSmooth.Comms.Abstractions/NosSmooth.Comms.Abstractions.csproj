@@ -13,7 +13,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="NosSmooth.Core" Version="4.0.3" />
       <PackageReference Include="NosSmooth.Packets" Version="3.6.0" />
-      <PackageReference Include="NosSmooth.PacketSerializer.Abstractions" Version="1.3.1" />
+      <PackageReference Include="NosSmooth.PacketSerializer.Abstractions" Version="1.3.2" />
     </ItemGroup>
 
 </Project>

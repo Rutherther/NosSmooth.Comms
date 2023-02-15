@@ -22,7 +22,7 @@
             <PrivateAssets>None</PrivateAssets>
         </PackageReference>
 
-        <PackageReference Include="NosSmooth.LocalBinding" Version="2.0.0" />
+        <PackageReference Include="NosSmooth.LocalBinding" Version="2.0.1" />
     </ItemGroup>
 
 </Project>
