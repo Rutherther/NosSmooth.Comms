@@ -172,12 +172,21 @@ public class CommsInjector
 
     private Result Inject(Process process, string method)
     {
-        return _injector.Inject
+        var injectResult = _injector.Inject
         (
             process,
             Path.GetFullPath("NosSmooth.Comms.Inject.dll"),
             "NosSmooth.Comms.Inject.DllMain, NosSmooth.Comms.Inject",
             method
         );
+
+        if (!injectResult.IsDefined(out var result))
+        {
+            return Result.FromError(injectResult);
+        }
+
+        return result == 0
+            ? Result.FromSuccess()
+            : new GenericError("Unknown injection error has happened.");
     }
 }

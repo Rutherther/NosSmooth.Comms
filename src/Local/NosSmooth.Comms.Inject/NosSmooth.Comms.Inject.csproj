@@ -5,8 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnableDynamicLoading>true</EnableDynamicLoading>
-        <VersionPrefix>1.3.0</VersionPrefix>
-        <PackageReleaseNotes>Add Costura.Fody support.</PackageReleaseNotes>
+        <VersionPrefix>1.4.0</VersionPrefix>
+        <PackageReleaseNotes>Update to new injection passing in data and returning an integer.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,10 +16,10 @@
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-      <PackageReference Include="NosSmooth.Core" Version="4.0.3" />
-      <PackageReference Include="NosSmooth.Extensions.SharedBinding" Version="1.0.1" />
+      <PackageReference Include="NosSmooth.Core" Version="5.0.0" />
+      <PackageReference Include="NosSmooth.Extensions.SharedBinding" Version="1.0.2" />
       <PackageReference Include="NosSmooth.LocalBinding" Version="2.0.1" />
-      <PackageReference Include="NosSmooth.LocalClient" Version="2.0.1" />
+      <PackageReference Include="NosSmooth.LocalClient" Version="2.2.0" />
       <PackageReference Include="NosSmooth.PacketSerializer.Abstractions" Version="1.3.2" />
     </ItemGroup>
 

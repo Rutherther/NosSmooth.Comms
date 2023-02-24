@@ -34,10 +34,11 @@ public class DllMain
     /// <summary>
     /// Enable named pipes server.
     /// </summary>
+    /// <param name="data">Should be zero, is not used.</param>
+    /// <returns>The result, 0 success, 1 failure.</returns>
     [UnmanagedCallersOnly(EntryPoint = "EnableNamedPipes")]
-    public static void EnableNamedPipes()
-    {
-        Main
+    public static int EnableNamedPipes(nuint data)
+        => Main
         (
             host =>
             {
@@ -46,42 +47,56 @@ public class DllMain
                     (host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping);
             }
         );
-    }
 
     /// <summary>
     /// Open a console.
     /// </summary>
+    /// <param name="data">Should be zero, is not used.</param>
+    /// <returns>The result, 0 success, 1 failure.</returns>
     [UnmanagedCallersOnly(EntryPoint = "OpenConsole")]
-    public static void OpenConsole()
+    public static int OpenConsole(nuint data)
     {
         WinConsole.Initialize(false);
+        return 0;
     }
 
     /// <summary>
     /// Close a console.
     /// </summary>
+    /// <param name="data">Should be zero, is not used.</param>
+    /// <returns>The result, 0 success, 1 failure.</returns>
     [UnmanagedCallersOnly(EntryPoint = "CloseConsole")]
-    public static void CloseConsole()
+    public static int CloseConsole(nuint data)
     {
         WinConsole.Close();
+        return 0;
     }
 
-    private static void Main(Func<IHost, Task<Result>> host)
+    private static int Main(Func<IHost, Task<Result>> host)
     {
-        new Thread
-        (
-            () =>
-            {
-                try
+        try
+        {
+            new Thread
+            (
+                () =>
                 {
-                    MainEntry(host).GetAwaiter().GetResult();
+                    try
+                    {
+                        MainEntry(host).GetAwaiter().GetResult();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-            }
-        ).Start();
+            ).Start();
+
+            return 0;
+        }
+        catch (Exception)
+        {
+            return 1;
+        }
     }
 
     /// <summary>
